@@ -1,0 +1,73 @@
+body {
+    padding: 0;
+    margin: 0;
+}
+
+h2 {
+    text-align: center;
+}
+
+h4 {
+    text-align: center;
+    font-weight: normal;
+    margin-top: 30px;
+}
+
+h2, h4 {
+    color: #00304d;
+}
+
+.list-option {
+    border-bottom: 1px solid #DDDDDD;
+}
+
+a .list-option {
+    font-size: 32px;
+    line-height: 1.50;
+    letter-spacing: 0;
+    text-align: left;
+    color: #859097;
+}
+
+a:hover, a:focus {
+    background-color: transparent;
+    text-decoration: none;
+    color: #00304d;
+}
+
+a .list-option:hover,
+a .list-option:focus {
+    color: #00304d;
+}
+
+a .list-option .glyphicon {
+    position: relative;
+    left: 0;
+    transition: left ease 0.5s;
+}
+
+a .list-option:hover .glyphicon {
+    left: 10px;
+}
+
+.glyphicon {
+    color: #00304d;
+}
+
+.newEdition-container {
+    margin-top: 60px;
+}
+
+.row {
+    height: 100px;
+    display: flex;
+    align-items: center;
+}
+
+a .row .block {
+    height: 50px;
+}
+
+.footer {
+    margin-top: 50px;
+}

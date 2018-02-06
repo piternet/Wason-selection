@@ -1,0 +1,46 @@
+    <div class="container">
+        <div id="topPanel"><h4>
+Jesteś członkiem Polskiego Związku Alpinizmu odwiedzającym schronisko na dużej wysokości w Alpach szwajcarskich. Ze względu na trudno dostępne położenie, w domku tym nie ma żadnej obsługi. Ponieważ na tej wysokości jest zimno, a drewno jest nieosiągalne, istnieje konieczność jego przynoszenia. W związku z tym Szwajcarski Klub Alpinistyczny prowadzący to schronisko ustanowił następującą regułę:
+jeśli ktoś nocuje w schronisku, to musi przynieść ze sobą z doliny wiązkę drewna.
+Karty, które zobaczysz poniżej reprezentują czterech wspinaczy, których spotkałeś przy schronisku. Z jednej strony karty jest informacja czy osoba ta zatrzymuje się w schronisku, czy nie, a druga strona karty mówi, czy osoba ta przyniosła drewno czy też nie. Chcesz sprawdzić, czy wspinacze łamią powyższą regułę. Zaznacz tylko te karty, które potrzebujesz odkryć aby przekonać się, czy którykolwiek ze wspinaczy złamał tę regułę. Reguła ta prezentowana jest jeszcze raz poniżej.</h4></div>
+        <div class="topPanelButton">
+            <button onclick="showBottomPanel()">Dalej</button>
+        </div>
+        <div id="bottomPanel" class="bottomPanel">
+            <h3 id="description">jeśli ktoś nocuje w schronisku, to musi przynieść ze sobą z doliny wiązkę drewna</h3>
+
+            <div class="row shufflediv">
+                <div class="col-md-3">
+                    <div class="card correct" onmousedown="cardClicked(this, event)">
+                        <div id="test6-number1" class="number">zostaje na noc w domku</div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card" onmousedown="cardClicked(this, event)">
+                        <div id="test6-number2" class="number">nie zostaje na noc w domku</div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div style="" class="card" onmousedown="cardClicked(this, event)">
+                        <div id="test6-number3" class="number">przyniósł drewno</div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div style="" class="card correct" onmousedown="cardClicked(this, event)">
+                        <div id="test6-number4" class="number">nie przyniósł drewna</div>
+                    </div>
+                </div>
+            </div>
+
+            <h4>Zaznacz tylko te karty, które potrzebujesz odkryć aby przekonać się, że w tej talii powyższa reguła jest złamana.</h4>
+
+            <h4 style="font-style: italic">Naciśnij odpowiednie przyciski reprezentujące karty. Klikając przycisk powtórnie możesz cofnąć wybór</h4>
+
+            <div class="button">
+                <button onclick="check()">Dalej</button>
+            </div>
+        </div>
+    </div>

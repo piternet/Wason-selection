@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Selekcja Wasona</title>
+
+    {% load static %}
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/game.css' %}" />
+</head>
+<body>
+
+    <div id="descriptionPanel">
+        <div class="container">
+            <h3 id="description">{{ description }}</h3>
+
+            <button onclick="start()">Dalej</button>
+        </div>
+    </div>
+
+    <div id="taskNumberPanel" class="hidden">
+        <div class="container">
+            <h3 id="taskNumber">Zadanie nr 1</h3>
+
+            <button onclick="taskNumberClicked()">Dalej</button>
+        </div>
+    </div>
+
+    <div id="trainingPanel" class="hidden">
+        {% include 'tests/training.html' %}
+    </div>
+
+    <div id="gamePanel" class="hidden">
+        <div id="test1" class="hidden">
+            {% include 'tests/test1.html' %}
+        </div>
+
+        <div id="test2" class="hidden">
+            {% include 'tests/test2.html' %}
+        </div>
+
+        <div id="test3" class="hidden">
+            {% include 'tests/test3.html' %}
+        </div>
+
+        <div id="test4" class="hidden">
+            {% include 'tests/test4.html' %}
+        </div>
+
+        <div id="test5" class="hidden">
+            {% include 'tests/test4.html' %}
+        </div>
+
+        <div id="test6" class="hidden">
+            {% include 'tests/test4.html' %}
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.js"   integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="   crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+    <script>
+        var limitSeconds = {{ timeLimit }};
+        var sessionId = {{ sessionId }};
+        var redBackgroundLimit = {{ redBackgroundTime }};
+        var gameStarted = false;
+        var times = [];
+        var rightClickTimes = [];
+        var testNumbers = [];
+        var timer_instance;
+        var redBackgroundTimer;
+        var taskNumber = 1;
+
+        function timer(callback, delay) {
+            var id, started, remaining = delay, running;
+
+            this.start = function() {
+                running = true;
+                started = new Date();
+                id = setTimeout(callback, remaining)
+            };
+
+            this.pause = function() {
+                running = false;
+                clearTimeout(id);
+                remaining -= new Date() - started
+            };
+
+            this.getTimeLeft = function() {
+                if (running) {
+                    this.pause();
+                    this.start();
+                }
+
+                return remaining
+            };
+
+            this.getStateRunning = function() {
+                return running
+            };
+
+            this.start()
+        }
+
+        function showBottomPanel() {
+            $(".topPanelButton").addClass("hidden");
+            $(".bottomPanel").removeClass("hidden");
+
+            redBackgroundTimer = new timer(function () {
+                    $("body").css("background-color", "red");
+            }, redBackgroundLimit*1000);
+
+            gameStarted = true;
+        }
+
+        function taskNumberClicked() {
+            $(".bottomPanel").addClass("hidden");
+            $("#taskNumberPanel").addClass("hidden");
+            $("#gamePanel").removeClass("hidden");
+            $("#test" + testNumbers[taskNumber-1]).removeClass("hidden");
+
+            timer_instance = new timer(function () {}, limitSeconds*1000);
+
+
+        }
+
+        $(".shufflediv").each(function() {
+            var divs = $(this).find('.col-md-3');
+            for(var i = 0; i < divs.length; i++) $(divs[i]).remove();
+
+            divs = shuffle(divs);
+            for(var i = 0; i < divs.length; i++) $(divs[i]).appendTo(this);
+        });
+        
+        function shuffleCards() {
+            var card1 = $("#test" + testNumbers[taskNumber-1] + "-number1").innerHTML;
+            var card2 = $("#test" + testNumbers[taskNumber-1] + "-number2").innerHTML;
+            var card3 = $("#test" + testNumbers[taskNumber-1] + "-number3").innerHTML;
+            var card4 = $("#test" + testNumbers[taskNumber-1] + "-number4").innerHTML;
+
+            var newCards = shuffle([card1, card2, card3, card4]);
+
+        }
+
+        function resetGame() {
+            $("#gamePanel").addClass("hidden");
+            $(".topPanelButton").removeClass("hidden");
+            $("#test" + testNumbers[taskNumber-1]).addClass("hidden");
+            redBackgroundTimer.pause();
+            taskNumber++;
+            rightClickTimes = [];
+            times = [];
+            gameStarted = false;
+            $("body").css("background-color", "white");
+            $("#taskNumber").text("Zadanie nr " + taskNumber);
+            $("#taskNumberPanel").removeClass("hidden");
+        }
+
+        function start() {
+            testNumbers.push("1");
+            testNumbers.push("2");
+            var randomTests = ["3", "4", "5", "6"];
+            randomTests = shuffle(randomTests);
+            for (var i = 0; i < 4; i++) testNumbers.push(randomTests[i]);
+
+            $("#descriptionPanel").addClass("hidden");
+
+            if (sessionId == 1) {
+                $("#trainingPanel").removeClass("hidden");
+
+                timer_instance = new timer(function () {
+                    if (sessionId == 1)
+                        window.location.href = '{% url 'game' sessionId=2 %}';
+                    else
+                        window.location.href = '{% url 'homePage' %}';
+                }, limitSeconds*1000);
+
+                redBackgroundTimer = new timer(function () {
+                    $("body").css("background-color", "red");
+                }, redBackgroundLimit*1000);
+
+                gameStarted = true;
+            }
+            else
+                $("#taskNumberPanel").removeClass("hidden");
+        }
+
+        function cardClicked(card, event) {
+            if (event.button == 2)
+                return;
+
+            times.push(limitSeconds*1000 - timer_instance.getTimeLeft());
+
+            if (card.className.includes('active'))
+                $(card).removeClass('active');
+            else
+                $(card).addClass(" active");
+        }
+
+        $( document ).contextmenu(function (e) {
+            return false;
+        });
+
+        document.onmousedown = function (e) {
+            if (gameStarted && e.button == 2 && !e.target.classList.contains('card')) {
+                redBackgroundTimer.pause();
+                redBackgroundTimer = new timer(function () {
+                    $("body").css("background-color", "red");
+                }, redBackgroundLimit*1000);
+
+                rightClickTimes.push(limitSeconds*1000 - timer_instance.getTimeLeft());
+
+                if (rightClickTimes.length > 5 && abs(rightClickTimes[rightClickTimes.length-1] - rightClickTimes[rightClickTimes.length-6]) < 4000)
+                    $("body").css("background-color", "DarkGreen");
+            }
+        };
+
+        function abs(value) {
+            if (value < 0) return value * -1;
+            else return value;
+        }
+
+        function check() {
+            var needed = 0;
+            $(".card").map(function() {
+                if (this.className.includes('correct'))
+                    needed++;
+            }).get();
+
+            var correctAnswers = 0;
+            var incorrectAnsers = 0;
+
+            $(".active").map(function() {
+                if (this.className.includes('correct'))
+                    correctAnswers++;
+                else
+                    incorrectAnsers++;
+            }).get();
+
+            var result = "zle";
+            if (correctAnswers == 2 && incorrectAnsers == 0)
+                result = "dobrze";
+
+            post(result);
+        }
+
+        function shuffle(array) {
+          var currentIndex = array.length, temporaryValue, randomIndex;
+
+          while (0 !== currentIndex) {
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex -= 1;
+
+            temporaryValue = array[currentIndex];
+            array[currentIndex] = array[randomIndex];
+            array[randomIndex] = temporaryValue;
+          }
+
+          return array;
+        }
+
+        function post(result) {
+            $.ajaxSetup({
+                headers: { "X-CSRFToken": getCookie("csrftoken") }
+            });
+
+            $.ajax({
+                url:'{% url 'game' sessionId=1 %}',
+                type: "POST",
+                data: {
+                    times: JSON.stringify(times),
+                    result: result,
+                    solutionTime: String(limitSeconds*1000 - timer_instance.getTimeLeft()),
+                    taskNumber: testNumbers[taskNumber-1]
+                },
+                success:function(response){
+                    var msg = response['msg'];
+                    if (msg == "OK") {
+                        if (taskNumber == 6)
+                            window.location.replace("{% url 'thanks' %}");
+                        else
+                            resetGame();
+                    }
+                    else
+                        alert(msg);
+                },
+                complete:function(){},
+                error:function (xhr, textStatus, thrownError){alert("Błąd serwera. Proszę spróbować ponownie.")}
+            });
+        }
+
+        function getCookie(c_name) {
+            if (document.cookie.length > 0) {
+                c_start = document.cookie.indexOf(c_name + "=");
+                if (c_start != -1) {
+                    c_start = c_start + c_name.length + 1;
+                    c_end = document.cookie.indexOf(";", c_start);
+                    if (c_end == -1) c_end = document.cookie.length;
+                    return unescape(document.cookie.substring(c_start,c_end));
+                }
+            }
+            return "";
+        }
+    </script>
+</body>
+</html>

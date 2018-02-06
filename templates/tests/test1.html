@@ -1,0 +1,46 @@
+    <div class="container">
+        <div id="topPanel"><h4>
+Wyobraź sobie, że masz talię kart na których z jednej strony są litery alfabetu łacińskiego, a z drugiej strony liczby naturalne. Przypuszczasz, że litery i liczby na kartach są rozmieszczone zgodnie z następującą regułą:
+jeśli z jednej strony jest samogłoska, to z drugiej strony jest liczba parzysta,
+ale nie jesteś tego pewien (-na). Karty, które zobaczysz poniżej zostały wyciągnięte z tej talii.</h4></div>
+        <div class="topPanelButton">
+            <button onclick="showBottomPanel()">Dalej</button>
+        </div>
+        <div id="bottomPanel" class="bottomPanel">
+            <h3 id="description">jeśli z jednej strony jest samogłoska, to z drugiej strony jest liczba parzysta</h3>
+
+            <div class="row shufflediv">
+                <div class="col-md-3">
+                    <div class="card correct" onmousedown="cardClicked(this, event)">
+                        <div id="test1-number1" class="number">A</div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card" onmousedown="cardClicked(this, event)">
+                        <div id="test1-number2" class="number">G</div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div style="" class="card" onmousedown="cardClicked(this, event)">
+                        <div id="test1-number3" class="number">4</div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div style="" class="card correct" onmousedown="cardClicked(this, event)">
+                        <div id="test1-number4" class="number">7</div>
+                    </div>
+                </div>
+            </div>
+
+            <h4>Zaznacz tylko te karty, które potrzebujesz odkryć aby przekonać się, że w tej talii powyższa reguła jest złamana.</h4>
+
+            <h4 style="font-style: italic">Naciśnij odpowiednie przyciski reprezentujące karty. Klikając przycisk powtórnie możesz cofnąć wybór</h4>
+
+            <div class="button">
+                <button onclick="check()">Dalej</button>
+            </div>
+        </div>
+    </div>

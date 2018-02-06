@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Selekcja Wasona</title>
+
+    {% load static %}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <link rel="stylesheet" type="text/css" href="{% static 'css/signUp.css' %}" />
+</head>
+<body>
+
+    <div id="signUpPanel">
+        {% csrf_token %}
+        <h3 id="description">Przed rozpoczęciem podaj niezbędne dane:</h3>
+        <p></p>
+
+        <div class="container">
+            <div class="input-group">
+              
+              <input type="text" class="form-control" name="team_name" placeholder="Nazwa użytkownika" aria-label="Nazwa użytkownika" aria-describedby="basic-addon1">
+              
+            </div>
+            <div class="input-group">
+
+            <select required name="category_type" id="category_type" class="form-control">
+                    <option value="" disabled selected>płeć</option>
+                    <option value="MAN">Mężczyzna</option>
+                    <option value="WOMAN">Kobieta</option>
+                </select>
+
+             </div>
+            <div class="input-group">
+              
+              <input type="text" class="form-control" type="number" name="age" placeholder="Wiek" aria-label="Wiek" aria-describedby="basic-addon1">
+              
+            </div>
+
+            <button type="button" class="btn btn-primary" onclick="start()">Dalej</button>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.js"   integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="   crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+
+    <script>
+        function next() {
+            $("#signUpPanel").removeClass("hidden");
+        }
+
+        function start() {
+            var inputs = document.getElementsByTagName("input");
+            var name = inputs[1].value;
+            var age = inputs[2].value;
+            var sex = document.getElementsByTagName("select")[0].value;
+
+            if (name.trim() == "") {
+                alert("Proszę wprowadzić pseudonim");
+                return;
+            }
+
+            if (sex != "MAN" && sex != "WOMAN") {
+                alert("Proszę wybrać płeć");
+                return;
+            }
+
+            post(name, sex, age);
+        }
+
+        function post(name, sex, age) {
+            console.log(name, sex, age);
+            $.ajaxSetup({
+                headers: { "X-CSRFToken": getCookie("csrftoken") }
+            });
+
+            $.ajax({
+                url:'{% url 'signUp' %}',
+                type: "POST",
+                data: {
+                    name: name,
+                    sex: sex,
+                    age: age
+                },
+                success:function(response){
+                    var msg = response['msg'];
+                    if (msg == "OK")
+                        window.location.replace("{% url 'gilSession' sessionId=1 %}");
+                    else
+                        alert(msg);
+                },
+                complete:function(){},
+                error:function (xhr, textStatus, thrownError){alert("Błąd serwera. Proszę spróbować ponownie.")}
+            });
+        }
+
+        function getCookie(c_name) {
+            if (document.cookie.length > 0) {
+                c_start = document.cookie.indexOf(c_name + "=");
+                if (c_start != -1) {
+                    c_start = c_start + c_name.length + 1;
+                    c_end = document.cookie.indexOf(";", c_start);
+                    if (c_end == -1) c_end = document.cookie.length;
+                    return unescape(document.cookie.substring(c_start,c_end));
+                }
+            }
+            return "";
+        }
+    </script>
+</body>
+</html>

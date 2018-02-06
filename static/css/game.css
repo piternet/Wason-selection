@@ -1,0 +1,51 @@
+h1, h2, h3, h4, h5 {
+    text-align: center;
+}
+
+#descriptionPanel {
+    margin-bottom: 100px;
+}
+
+#description {
+    margin-bottom: 50px;
+}
+
+.col-md-3 {
+    text-align: center;
+}
+
+.card {
+    height: 300px;
+    width: 200px;
+    border: 1px solid #DDDDDD;
+    display: inline-flex;
+    text-align: center;
+    align-items: center;
+}
+
+.number {
+    width: 100%;
+    font-size: 20px;
+}
+
+.card:hover {
+    border-width: 5px;
+}
+
+.active {
+    border-width: 5px;
+    border-color: green;
+}
+
+button {
+    margin-top: 50px;
+    text-align: center;
+}
+
+.container {
+    text-align: center;
+}
+
+#bottomPanel, #topPanel {
+    border: 1px solid #DDDDDD;
+}

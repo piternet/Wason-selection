@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Selekcja Wasona</title>
+
+    {% load static %}
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/signUp.css' %}" />
+</head>
+<body>
+
+    <div id="panel">
+
+        <h1>Test selekcji Wasona</h1>
+
+        <div class="container sessionPanel">
+            <h3>{{ description }}</h3>
+
+            <h3>Czas trwania zadania: {{ timeLimit }}s</h3>
+            <h3>Czas po którym kolor tła zmieni się na czerwony: {{ redBackgroundTime }}s</h3>
+
+            <button onclick="start()">Dalej</button>
+        </div>
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.js"   integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="   crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+    <script>
+        var limitSeconds = {{ timeLimit }};
+        var sessionId = {{ sessionId }};
+        var redBackgroundLimit = {{ redBackgroundTime }};
+        var gameStarted = false;
+        var times = [];
+        var timer_instance;
+        var redBackgroundTimer;
+
+        function timer(callback, delay) {
+            var id, started, remaining = delay, running;
+
+            this.start = function() {
+                running = true;
+                started = new Date();
+                id = setTimeout(callback, remaining)
+            };
+
+            this.pause = function() {
+                running = false;
+                clearTimeout(id);
+                remaining -= new Date() - started
+            };
+
+            this.getTimeLeft = function() {
+                if (running) {
+                    this.pause();
+                    this.start();
+                }
+
+                return remaining
+            };
+
+            this.getStateRunning = function() {
+                return running
+            };
+
+            this.start()
+        }
+
+        function start() {
+            $("#panel").addClass("hidden");
+
+            timer_instance = new timer(function () {
+                if (sessionId == 1)
+                    window.location.href = '{% url 'gilSession' sessionId=2 %}';
+                else
+                    post();
+            }, limitSeconds*1000);
+
+            redBackgroundTimer = new timer(function () {
+                $("body").css("background-color", "red");
+            }, redBackgroundLimit*1000);
+
+            gameStarted = true;
+        }
+
+        $( document ).contextmenu(function (e) {
+            return false;
+        });
+
+        document.onmousedown = function(e) {
+            if (gameStarted && e.button == 2) {
+                redBackgroundTimer.pause();
+                redBackgroundTimer = new timer(function () {
+                    $("body").css("background-color", "red");
+                }, redBackgroundLimit*1000);
+
+                times.push(limitSeconds*1000 - timer_instance.getTimeLeft());
+
+                if (times.length > 5 && times[times.length-1] - times[times.length-6] < 4000)
+                    $("body").css("background-color", "green");
+            }
+        };
+
+        function post() {
+            $.ajaxSetup({
+                headers: { "X-CSRFToken": getCookie("csrftoken") }
+            });
+
+            $.ajax({
+                url:'{% url 'gilSession' sessionId=1 %}',
+                type: "POST",
+                data: {
+                    times: JSON.stringify(times)
+                },
+                success:function(response){
+                    var msg = response['msg'];
+                    if (msg == "OK")
+                        window.location.replace("{% url 'game' sessionId=1 %}");
+                    else
+                        alert(msg);
+                },
+                complete:function(){},
+                error:function (xhr, textStatus, thrownError){alert("Błąd serwera. Proszę spróbować ponownie.")}
+            });
+        }
+
+        function getCookie(c_name) {
+            if (document.cookie.length > 0) {
+                c_start = document.cookie.indexOf(c_name + "=");
+                if (c_start != -1) {
+                    c_start = c_start + c_name.length + 1;
+                    c_end = document.cookie.indexOf(";", c_start);
+                    if (c_end == -1) c_end = document.cookie.length;
+                    return unescape(document.cookie.substring(c_start,c_end));
+                }
+            }
+            return "";
+        }
+    </script>
+</body>
+</html>
